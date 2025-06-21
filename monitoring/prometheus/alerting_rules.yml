@@ -1,0 +1,15 @@
+groups:
+  - name: node-exporter-alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: |
+          100 * (1 - avg by (instance) (
+            rate(node_cpu_seconds_total{mode="idle"}[5m])
+          )) > 70
+        for: 5s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 70% for the last 2 minutes on instance {{ $labels.instance }}. Current value: {{ printf \"%.2f\" $value }}%"
+
